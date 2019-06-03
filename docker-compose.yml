@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  nginx: 
+    build: ./ops/docker/nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./application/public:/code/public:ro
+    depends_on:
+      - php
+    networks:
+      - app-network
+  php:
+    build: 
+      context: ./ops/docker/php
+      args:
+        INSTALL_XDEBUG: "true"
+    volumes:
+      - ./application:/code
+    env_file:
+      - .env
+    networks:
+      - app-network
+  mysql:
+    build: ./ops/docker/mysql
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    environment:
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  db-data:
