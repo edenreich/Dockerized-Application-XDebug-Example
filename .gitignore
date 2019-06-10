@@ -1,3 +1,6 @@
 # IDE's configurations
 .vscode
 .idea
+
+# Application Directory
+application
